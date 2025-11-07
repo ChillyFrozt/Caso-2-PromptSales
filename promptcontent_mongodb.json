@@ -1,0 +1,358 @@
+{
+  "database": "promptcontent",
+  "collections": {
+    "contents": {
+      "validation": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "tenant_id",
+            "title",
+            "description",
+            "created_at"
+          ],
+          "properties": {
+            "tenant_id": {
+              "bsonType": "string",
+              "description": "UUID string"
+            },
+            "title": {
+              "bsonType": "string",
+              "maxLength": 300
+            },
+            "description": {
+              "bsonType": "string"
+            },
+            "hashtags": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "string"
+              }
+            },
+            "formats": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "string"
+              }
+            },
+            "rights": {
+              "bsonType": "object",
+              "properties": {
+                "license": {
+                  "bsonType": "string"
+                },
+                "expires_at": {
+                  "bsonType": [
+                    "date",
+                    "null"
+                  ]
+                },
+                "owner": {
+                  "bsonType": "string"
+                }
+              }
+            },
+            "sources": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "properties": {
+                  "provider": {
+                    "bsonType": "string"
+                  },
+                  "ext_id": {
+                    "bsonType": "string"
+                  }
+                }
+              }
+            },
+            "variants": {
+              "bsonType": "array",
+              "items": {
+                "bsonType": "object",
+                "properties": {
+                  "variant_id": {
+                    "bsonType": "string"
+                  },
+                  "format": {
+                    "bsonType": "string"
+                  },
+                  "url": {
+                    "bsonType": "string"
+                  },
+                  "width": {
+                    "bsonType": "int"
+                  },
+                  "height": {
+                    "bsonType": "int"
+                  },
+                  "duration_ms": {
+                    "bsonType": [
+                      "int",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            },
+            "embedding": {
+              "bsonType": "object",
+              "properties": {
+                "provider": {
+                  "enum": [
+                    "pinecone",
+                    "pgvector",
+                    "faiss",
+                    "none"
+                  ]
+                },
+                "dim": {
+                  "bsonType": "int"
+                },
+                "vec_id": {
+                  "bsonType": [
+                    "string",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "approval": {
+              "bsonType": "object",
+              "properties": {
+                "status": {
+                  "enum": [
+                    "draft",
+                    "pending",
+                    "approved",
+                    "rejected"
+                  ]
+                },
+                "approved_by": {
+                  "bsonType": [
+                    "string",
+                    "null"
+                  ]
+                },
+                "approved_at": {
+                  "bsonType": [
+                    "date",
+                    "null"
+                  ]
+                }
+              }
+            },
+            "metadata": {
+              "bsonType": "object"
+            },
+            "created_at": {
+              "bsonType": "date"
+            },
+            "updated_at": {
+              "bsonType": [
+                "date",
+                "null"
+              ]
+            },
+            "created_by": {
+              "bsonType": [
+                "string",
+                "null"
+              ]
+            },
+            "updated_by": {
+              "bsonType": [
+                "string",
+                "null"
+              ]
+            },
+            "is_deleted": {
+              "bsonType": "bool"
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "key": {
+            "tenant_id": 1,
+            "approval.status": 1,
+            "created_at": -1
+          },
+          "name": "ix_contents_tenant_status_created"
+        },
+        {
+          "key": {
+            "title": "text",
+            "description": "text"
+          },
+          "name": "ix_contents_text",
+          "default_language": "spanish"
+        },
+        {
+          "key": {
+            "hashtags": 1
+          },
+          "name": "ix_contents_hashtags"
+        }
+      ]
+    },
+    "prompt_logs": {
+      "validation": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "tenant_id",
+            "tool",
+            "request",
+            "created_at"
+          ],
+          "properties": {
+            "tenant_id": {
+              "bsonType": "string"
+            },
+            "tool": {
+              "enum": [
+                "getContent",
+                "generateAudienceMessages"
+              ]
+            },
+            "request": {
+              "bsonType": "object"
+            },
+            "response": {
+              "bsonType": [
+                "object",
+                "null"
+              ]
+            },
+            "status": {
+              "enum": [
+                "ok",
+                "error"
+              ]
+            },
+            "created_at": {
+              "bsonType": "date"
+            },
+            "created_by": {
+              "bsonType": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "key": {
+            "tenant_id": 1,
+            "tool": 1,
+            "created_at": -1
+          },
+          "name": "ix_plogs_tenant_tool_created"
+        }
+      ]
+    },
+    "audience_profiles": {
+      "validation": {
+        "$jsonSchema": {
+          "bsonType": "object",
+          "required": [
+            "tenant_id",
+            "name",
+            "persona",
+            "created_at"
+          ],
+          "properties": {
+            "tenant_id": {
+              "bsonType": "string"
+            },
+            "name": {
+              "bsonType": "string"
+            },
+            "persona": {
+              "bsonType": "object"
+            },
+            "created_at": {
+              "bsonType": "date"
+            },
+            "updated_at": {
+              "bsonType": [
+                "date",
+                "null"
+              ]
+            }
+          }
+        }
+      },
+      "indexes": [
+        {
+          "key": {
+            "tenant_id": 1,
+            "name": 1
+          },
+          "name": "ix_ap_tenant_name",
+          "unique": true
+        }
+      ]
+    }
+  },
+  "mcp_tools_payloads": {
+    "getContent_request": {
+      "tenant_id": "UUID string",
+      "query_text": "string",
+      "filters": {
+        "formats": [
+          "image|video|text|audio"
+        ],
+        "hashtags": [
+          "..."
+        ],
+        "approved_only": true
+      },
+      "limit": 10
+    },
+    "getContent_response": {
+      "items": [
+        {
+          "content_id": "ObjectId/UUID",
+          "title": "string",
+          "url": "string",
+          "hashtags": [
+            "..."
+          ],
+          "score": 0.0
+        }
+      ],
+      "took_ms": 23
+    },
+    "generateAudienceMessages_request": {
+      "tenant_id": "UUID string",
+      "campaign_description": "string",
+      "audiences": [
+        {
+          "name": "string",
+          "persona": {
+            "...": "..."
+          }
+        }
+      ],
+      "n_messages": 3
+    },
+    "generateAudienceMessages_response": {
+      "logs": [
+        {
+          "audience": "string",
+          "messages": [
+            "msg1",
+            "msg2",
+            "msg3"
+          ]
+        }
+      ],
+      "stored_log_id": "ObjectId"
+    }
+  }
+}
